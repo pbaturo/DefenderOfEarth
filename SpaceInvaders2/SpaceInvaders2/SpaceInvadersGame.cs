@@ -9,14 +9,18 @@ namespace SpaceInvaders2
     /// </summary>
     public class SpaceInvadersGame : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        GraphicsDeviceManager _graphics;
+        SpriteBatch _spriteBatch;
 
+        #region Textures
+        Texture2D _backgroundTexture;
+        Texture2D _playerTexture;
+        #endregion
 
-        Texture2D backgroundTexture;
+        Player _player;
         public SpaceInvadersGame()
         {
-            graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
@@ -29,6 +33,9 @@ namespace SpaceInvaders2
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            _graphics.PreferredBackBufferWidth = 800;
+            _graphics.PreferredBackBufferHeight = 600;
+            _graphics.ApplyChanges();
 
             base.Initialize();
         }
@@ -39,11 +46,14 @@ namespace SpaceInvaders2
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            // Create a new SpriteBatch, which can be used to draw textures. 
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            backgroundTexture = Content.Load<Texture2D>(@"Textures\space-tiled-background-256x256");
+            _backgroundTexture = Content.Load<Texture2D>(@"Textures\space-tiled-background-256x256");
+            _playerTexture = Content.Load<Texture2D>(@"Textures\SpaceShipSmall");
+
+            _player = new Player(_graphics.PreferredBackBufferWidth);
         }
 
         /// <summary>
@@ -66,7 +76,14 @@ namespace SpaceInvaders2
                 Exit();
 
             // TODO: Add your update logic here
-
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                _player.MoveLeft();
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                _player.MoveRight();
+            }
             base.Update(gameTime);
         }
 
@@ -79,19 +96,26 @@ namespace SpaceInvaders2
             GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
-            this.spriteBatch.Begin();
-            int width = backgroundTexture.Width;
-            int height = backgroundTexture.Height;
+            DrawBackground();
+            this._spriteBatch.Begin();
+            this._spriteBatch.Draw(_playerTexture, new Vector2(_player.PositionX, _graphics.PreferredBackBufferHeight - _playerTexture.Height), Color.White);
+            this._spriteBatch.End();
+            base.Draw(gameTime);
+        }
+
+        private void DrawBackground()
+        {
+            this._spriteBatch.Begin();
+            int width = _backgroundTexture.Width;
+            int height = _backgroundTexture.Height;
             for (int i = 0; i < 4; ++i)
             {
                 for (int j = 0; j < 3; ++j)
                 {
-                    this.spriteBatch.Draw(backgroundTexture, new Rectangle(i * width, j  *height , backgroundTexture.Width, backgroundTexture.Height), Color.White);
+                    this._spriteBatch.Draw(_backgroundTexture, new Rectangle(i * width, j * height, _backgroundTexture.Width, _backgroundTexture.Height), Color.White);
                 }
             }
-            this.spriteBatch.End();
-
-            base.Draw(gameTime);
+            this._spriteBatch.End();
         }
     }
 }
