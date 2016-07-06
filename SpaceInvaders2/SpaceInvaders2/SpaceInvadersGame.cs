@@ -53,7 +53,7 @@ namespace SpaceInvaders2
             _backgroundTexture = Content.Load<Texture2D>(@"Textures\space-tiled-background-256x256");
             _playerTexture = Content.Load<Texture2D>(@"Textures\SpaceShipSmall");
 
-            _player = new Player(_graphics.PreferredBackBufferWidth);
+            _player = new Player(_graphics.PreferredBackBufferWidth-_playerTexture.Width);
         }
 
         /// <summary>
