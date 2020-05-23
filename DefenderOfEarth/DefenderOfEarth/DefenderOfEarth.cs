@@ -1,24 +1,35 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
-namespace SpaceInvaders2
+
+namespace DefenderOfEarth.Game
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class SpaceInvadersGame : Game
+    public class DefenderOfEarth : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager _graphics;
         SpriteBatch _spriteBatch;
 
+        #region Sound Effects
+        SoundEffect _laserSound;
+        #endregion
+
         #region Textures
         Texture2D _backgroundTexture;
         Texture2D _playerTexture;
+        Texture2D _bulletTexture;
         #endregion
 
         Player _player;
-        public SpaceInvadersGame()
+        BulletFactory _bulletFactory;
+        Shooting _shooting;
+
+        public DefenderOfEarth()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -52,8 +63,12 @@ namespace SpaceInvaders2
             // TODO: use this.Content to load your game content here
             _backgroundTexture = Content.Load<Texture2D>(@"Textures\space-tiled-background-256x256");
             _playerTexture = Content.Load<Texture2D>(@"Textures\SpaceShipSmall");
+            _bulletTexture = Content.Load<Texture2D>(@"Textures\Bullet");
+            _bulletFactory = new BulletFactory(_bulletTexture.Width, _bulletTexture.Height, _graphics.PreferredBackBufferHeight);
+            _shooting = new Shooting(_bulletFactory);
+            _player = new Player(_shooting, _graphics.PreferredBackBufferWidth - _playerTexture.Width, _graphics.PreferredBackBufferHeight, _playerTexture.Width, _playerTexture.Height);
 
-            _player = new Player(_graphics.PreferredBackBufferWidth-_playerTexture.Width);
+            _laserSound = Content.Load<SoundEffect>(@"SoundEffects\laser");
         }
 
         /// <summary>
@@ -84,6 +99,15 @@ namespace SpaceInvaders2
             {
                 _player.MoveRight();
             }
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                //_bullet.Fire(_player.PositionX + _playerTexture.Width/2 - _bulletTexture.Width/2, _graphics.PreferredBackBufferHeight - _playerTexture.Height - _bulletTexture.Height);
+                if (_player.Shoot())
+                {
+                    _laserSound.Play();
+                }
+            }
+            _shooting.Move();
             base.Update(gameTime);
         }
 
@@ -99,6 +123,13 @@ namespace SpaceInvaders2
             DrawBackground();
             this._spriteBatch.Begin();
             this._spriteBatch.Draw(_playerTexture, new Vector2(_player.PositionX, _graphics.PreferredBackBufferHeight - _playerTexture.Height), Color.White);
+            foreach (Bullet bullet in _shooting.Bullets)
+            {
+                if (bullet.Visible)
+                {
+                    this._spriteBatch.Draw(_bulletTexture, new Vector2(bullet.PositionX, bullet.PositionY), Color.White);
+                }
+            }
             this._spriteBatch.End();
             base.Draw(gameTime);
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SpaceInvaders2
+namespace DefenderOfEarth.Game
 {
 #if WINDOWS || LINUX
     /// <summary>
@@ -14,7 +14,7 @@ namespace SpaceInvaders2
         [STAThread]
         static void Main()
         {
-            using (var game = new SpaceInvadersGame())
+            using (var game = new DefenderOfEarth())
                 game.Run();
         }
     }
