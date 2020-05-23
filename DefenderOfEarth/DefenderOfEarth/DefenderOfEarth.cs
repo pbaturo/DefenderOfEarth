@@ -23,11 +23,13 @@ namespace DefenderOfEarth.Game
         Texture2D _backgroundTexture;
         Texture2D _playerTexture;
         Texture2D _bulletTexture;
+        Texture2D _enemyTexture;
         #endregion
 
         Player _player;
         BulletFactory _bulletFactory;
         Shooting _shooting;
+        Enemy _enemy;
 
         public DefenderOfEarth()
         {
@@ -64,9 +66,11 @@ namespace DefenderOfEarth.Game
             _backgroundTexture = Content.Load<Texture2D>(@"Textures\space-tiled-background-256x256");
             _playerTexture = Content.Load<Texture2D>(@"Textures\SpaceShipSmall");
             _bulletTexture = Content.Load<Texture2D>(@"Textures\Bullet");
+            _enemyTexture = Content.Load<Texture2D>(@"Textures\enemy");
             _bulletFactory = new BulletFactory(_bulletTexture.Width, _bulletTexture.Height, _graphics.PreferredBackBufferHeight);
             _shooting = new Shooting(_bulletFactory);
             _player = new Player(_shooting, _graphics.PreferredBackBufferWidth - _playerTexture.Width, _graphics.PreferredBackBufferHeight, _playerTexture.Width, _playerTexture.Height);
+            _enemy = new Enemy(_graphics.PreferredBackBufferHeight, _graphics.PreferredBackBufferWidth, _enemyTexture.Width, _enemyTexture.Height);
 
             _laserSound = Content.Load<SoundEffect>(@"SoundEffects\laser");
         }
@@ -108,6 +112,7 @@ namespace DefenderOfEarth.Game
                 }
             }
             _shooting.Move();
+            _enemy.Move();
             base.Update(gameTime);
         }
 
@@ -130,6 +135,7 @@ namespace DefenderOfEarth.Game
                     this._spriteBatch.Draw(_bulletTexture, new Vector2(bullet.PositionX, bullet.PositionY), Color.White);
                 }
             }
+            this._spriteBatch.Draw(_enemyTexture, new Vector2(_enemy.PositionX, _enemy.PositionY), Color.White);
             this._spriteBatch.End();
             base.Draw(gameTime);
         }
